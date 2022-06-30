@@ -26,7 +26,7 @@ jobs:
           command: apk add --update ansible
       - run:
           name: Run Playbook and Configure server
-          command: ansible-playbook -i inventory main2.yml
+          command: ansible-playbook -i inventory.txt main2.yml
 
 workflows:
   my_workflow:
