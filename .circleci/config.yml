@@ -1,6 +1,6 @@
 version: 2.1
 
-# jobs:
+jobs:
   # create_infrastructure:
   #   docker:
   #     - image: amazon/aws-cli
@@ -13,23 +13,40 @@ version: 2.1
   #             --template-file template.yml \
   #             --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:5} \
   #             --region us-east-1
-jobs:            
-  configure_infrastructure:
+
+#   configure_infrastructure:
+#     docker:
+#       - image: python:3.7-alpine3.11
+#     steps:
+#       - checkout
+#       - add_ssh_keys:
+#           fingerprints: ["d2:9d:c6:e3:66:00:82:f2:0d:ed:63:c5:bd:61:ba:b8"]
+#       - run:
+#           name: Install Ansible
+#           command: apk add --update ansible
+#       - run:
+#           name: Run Playbook and Configure server
+#           command: ansible-playbook -i inventory.txt main2.yml
+
+  smoke_test:
     docker:
-      - image: python:3.7-alpine3.11
+      - image: alpine: latest
     steps:
-      - checkout
-      - add_ssh_keys:
-          fingerprints: ["d2:9d:c6:e3:66:00:82:f2:0d:ed:63:c5:bd:61:ba:b8"]
+      - run: apk add --update curl
       - run:
-          name: Install Ansible
-          command: apk add --update ansible
-      - run:
-          name: Run Playbook and Configure server
-          command: ansible-playbook -i inventory.txt main2.yml
+          name: smoke test
+          command: |
+            URL="https://blog.udacity.com/"
+            if curl -s --head ${URL}
+            then
+              return 0
+            else
+              return 1
+            fi
 
 workflows:
   my_workflow:
     jobs:
       # - create_infrastructure
-      - configure_infrastructure
+      # - configure_infrastructure
+      - smoke_test
